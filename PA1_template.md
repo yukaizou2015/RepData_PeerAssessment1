@@ -1,6 +1,11 @@
-# Reproducible Research: Peer Assessment 1
-Yukai Zou  
-11 November 2015  
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: Yukai Zou
+date: "11 November 2015"
+output: 
+  html_document:
+    keep_md: true
+---
 
 ## Loading and preprocessing the data
 
@@ -64,7 +69,7 @@ hist(ans1, main = "Distribution of the total number of steps taken each day",
      xlab = "Number of steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 Seems that the majority lies between 10000 and 15000. We then calculated the mean and median of the total number of steps taken per day.
 
@@ -89,7 +94,7 @@ plot(ans2, type="l", xlab = "Index of interval", ylab = "Averaged number of step
      main = "Averaged steps in each 5-minute interval")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 ```r
 # how to save a figure with customized size?
@@ -105,12 +110,11 @@ c(interval = names(which(ans2 == max(ans2))), index = as.numeric(which(ans2 == m
 ## interval    index 
 ##    "835"    "104"
 ```
-Therefore, we found that on average across all the days, the maximum number of steps was recorded at the *104th* interval, from *835* to *840 minutes*.
+Therefore, we found that on average across all the days, the maximum number of steps was recorded at the **104th** interval, from **835** to **840 minutes**.
 
 ## Imputing missing values
 
-Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
-1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+We suspected that the presence of missing values (e.g. missing days/intervals) may introduce bias in our calculations and summaries, therefore, it is necessary to impute these missing values. First, we wanted to know how many missing values in total are there within the dataset:
 
 ```r
 dim(activity[is.na(activity$steps),])[1]
@@ -119,6 +123,7 @@ dim(activity[is.na(activity$steps),])[1]
 ```
 ## [1] 2304
 ```
+That's quite a few missing data! 
 2. The mean of each 5-minute interval is used to fill in all of the missing values in the dataset. 
 3. A new dataset is created which contains the same original dataset but with the missing data filled in.
 
@@ -148,7 +153,7 @@ ans3 <- tapply(activity2$steps, activity2$date, sum)
 hist(ans3)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
 
 ```r
 c(mean = mean(ans3), median = median(ans3))
@@ -167,22 +172,6 @@ Imputing missing data did not change the mean, but the median was changed.
 
 ```r
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 activity2$date <- as.Date(activity2$date)
 activity2 <- mutate(activity2, daytype = factor(1 * (weekdays(date) == "Saturday" | weekdays(date) == "Sunday"), labels = c("weekday", "weekend")))
 ```
@@ -197,7 +186,7 @@ plot(weekday.avg, type="l", col = "red")
 lines(weekend.avg, col = "blue")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
 
 ```r
 # add a legend, showing red as weekday, blue as weekend
