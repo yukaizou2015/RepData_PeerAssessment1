@@ -7,51 +7,60 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
 
+We begin with setting the working directory and loading the data:
 ```{r}
-setwd("~/Desktop/Data Sciences Specialization/Reproducible Research/RepRes_PeerAssessment1")
+setwd("~/Desktop/Data Sciences Specialization/Reproducible Research/RepData_PeerAssessment1/")
 activity <- read.csv("activity.csv", stringsAsFactors=FALSE)
+head(activity)
 ```
+
 
 ## What is mean total number of steps taken per day?
 
-1. Calculate the total number of steps taken per day
+To answer the question, first we need to calculate the total number of steps taken per day:
 ```{r}
 ans1 <- tapply(activity$steps, activity$date, sum)
 ans1
 ```
-2. Make a histogram of the total number of steps taken each day
+We can make histogram to look at the distribution:
 ```{r}
 par(mar = c(4, 4, 2, 2))
-hist(ans1)
+hist(ans1, main = "Distribution of the total number of steps taken each day",
+     xlab = "Number of steps")
 ```
-3. Calculate and report the mean and median of the total number of steps taken per day
+
+Seems that the majority lies between 10000 and 15000. We then calculated the mean and median of the total number of steps taken per day.
 ```{r}
 c(mean = mean(ans1, na.rm=TRUE), median = median(ans1, na.rm=TRUE))
 ```
+The median is slightly lower than the mean value, but these numbers are consistent with what we observed in the histogram.
+
 
 ## What is the average daily activity pattern?
 
-1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+To answer this question, a line graph will be intuitive to demonstrate. We first averaged the number of steps, ignoring all the missing values, within each interval; then we plotted a time-series diagram with the 5-minute interval as x axis and the averaged number as y-axis.
 ```{r}
 ans2 <- tapply(activity$steps, activity$interval, function(x) mean(x, na.rm=TRUE))
-plot(ans2, type="l")
+plot(ans2, type="l", xlab = "Index of interval", ylab = "Averaged number of steps",
+     main = "Averaged steps in each 5-minute interval")
+# how to save a figure with customized size?
 ```
-2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+Based on the time-series plot, a peak was identified around the 100th interval. We then applied `which()` to find which index the peak value corresponds to:
 ```{r}
-as.numeric(which(ans2 == max(ans2)))
-ans2[which(ans2 == max(ans2))]
+c(interval = names(which(ans2 == max(ans2))), index = as.numeric(which(ans2 == max(ans2))))
 ```
+Therefore, we found that on average across all the days, the maximum number of steps was recorded at the **104th** interval, from **835** to **840 minutes**.
 
 ## Imputing missing values
 
-Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
-1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+We suspected that the presence of missing values (e.g. missing days/intervals) may introduce bias in our calculations and summaries, therefore, it is necessary to impute these missing values. First, we wanted to know how many missing values in total are there within the dataset:
 ```{r}
 dim(activity[is.na(activity$steps),])[1]
 ```
+That's quite a few missing data! 
 2. The mean of each 5-minute interval is used to fill in all of the missing values in the dataset. 
 3. A new dataset is created which contains the same original dataset but with the missing data filled in.
 ```{r}
@@ -67,6 +76,7 @@ hist(ans3)
 c(mean = mean(ans3), median = median(ans3))
 ```
 Imputing missing data did not change the mean, but the median was changed.
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

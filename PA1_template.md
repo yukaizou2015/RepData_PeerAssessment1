@@ -1,24 +1,31 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: Yukai Zou
-date: "11 November 2015"
-output: 
-  html_document:
-    keep_md: true
----
-
+# Reproducible Research: Peer Assessment 1
+Yukai Zou  
+11 November 2015  
 
 ## Loading and preprocessing the data
 
+We begin with setting the working directory and loading the data:
 
 ```r
-setwd("~/Desktop/Data Sciences Specialization/Reproducible Research/RepRes_PeerAssessment1")
+setwd("~/Desktop/Data Sciences Specialization/Reproducible Research/RepData_PeerAssessment1/")
 activity <- read.csv("activity.csv", stringsAsFactors=FALSE)
+head(activity)
 ```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 
 ## What is mean total number of steps taken per day?
 
-1. Calculate the total number of steps taken per day
+To answer the question, first we need to calculate the total number of steps taken per day:
 
 ```r
 ans1 <- tapply(activity$steps, activity$date, sum)
@@ -49,15 +56,17 @@ ans1
 ## 2012-11-30 
 ##         NA
 ```
-2. Make a histogram of the total number of steps taken each day
+We can make histogram to look at the distribution:
 
 ```r
 par(mar = c(4, 4, 2, 2))
-hist(ans1)
+hist(ans1, main = "Distribution of the total number of steps taken each day",
+     xlab = "Number of steps")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
-3. Calculate and report the mean and median of the total number of steps taken per day
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+Seems that the majority lies between 10000 and 15000. We then calculated the mean and median of the total number of steps taken per day.
 
 ```r
 c(mean = mean(ans1, na.rm=TRUE), median = median(ans1, na.rm=TRUE))
@@ -67,35 +76,36 @@ c(mean = mean(ans1, na.rm=TRUE), median = median(ans1, na.rm=TRUE))
 ##     mean   median 
 ## 10766.19 10765.00
 ```
+The median is slightly lower than the mean value, but these numbers are consistent with what we observed in the histogram.
+
 
 ## What is the average daily activity pattern?
 
-1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+To answer this question, a line graph will be intuitive to demonstrate. We first averaged the number of steps, ignoring all the missing values, within each interval; then we plotted a time-series diagram with the 5-minute interval as x axis and the averaged number as y-axis.
 
 ```r
 ans2 <- tapply(activity$steps, activity$interval, function(x) mean(x, na.rm=TRUE))
-plot(ans2, type="l")
+plot(ans2, type="l", xlab = "Index of interval", ylab = "Averaged number of steps",
+     main = "Averaged steps in each 5-minute interval")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
-2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-
-```r
-as.numeric(which(ans2 == max(ans2)))
-```
-
-```
-## [1] 104
-```
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 ```r
-ans2[which(ans2 == max(ans2))]
+# how to save a figure with customized size?
+```
+
+Based on the time-series plot, a peak was identified around the 100th interval. We then applied `which()` to find which index the peak value corresponds to:
+
+```r
+c(interval = names(which(ans2 == max(ans2))), index = as.numeric(which(ans2 == max(ans2))))
 ```
 
 ```
-##      835 
-## 206.1698
+## interval    index 
+##    "835"    "104"
 ```
+Therefore, we found that on average across all the days, the maximum number of steps was recorded at the *104th* interval, from *835* to *840 minutes*.
 
 ## Imputing missing values
 
@@ -138,7 +148,7 @@ ans3 <- tapply(activity2$steps, activity2$date, sum)
 hist(ans3)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
 ```r
 c(mean = mean(ans3), median = median(ans3))
@@ -149,6 +159,7 @@ c(mean = mean(ans3), median = median(ans3))
 ## 10766.19 10766.19
 ```
 Imputing missing data did not change the mean, but the median was changed.
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -186,7 +197,7 @@ plot(weekday.avg, type="l", col = "red")
 lines(weekend.avg, col = "blue")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
 ```r
 # add a legend, showing red as weekday, blue as weekend
